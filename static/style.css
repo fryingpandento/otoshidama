@@ -1,0 +1,202 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f8f8;
+    font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+}
+
+/* ポチ袋全体 */
+.envelope {
+    width: 220px;
+    height: 340px;
+    background-color: #fbfaf5;
+    /* 和紙っぽい白 */
+    position: relative;
+    margin: 0 auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    cursor: default;
+    /* ドロップ待機中 */
+    overflow: hidden;
+}
+
+.envelope.dragover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(182, 59, 56, 0.3);
+}
+
+/* 封筒の本体（前） */
+.body-front {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    background: transparent;
+    pointer-events: none;
+    /* ドロップを邪魔しないように */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* フタ（ベロ） */
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 110px solid transparent;
+    border-right: 110px solid transparent;
+    border-top: 90px solid #fbfaf5;
+    /* 本体と同じ色 */
+    transform-origin: top;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    /* 最前面 */
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.1));
+}
+
+/* 開いている状態（初期） */
+.flap {
+    transform: rotateX(180deg);
+}
+
+/* 閉じている状態 */
+.envelope.sealed .flap {
+    transform: rotateX(0deg);
+}
+
+/* ドロップエリア・メッセージ */
+.pocket {
+    width: 80%;
+    height: 60%;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    pointer-events: auto;
+    /* ここでイベントを受ける */
+}
+
+.message {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* 水引（みずひき）デザイン */
+/* 蝶結びをCSSで表現 */
+.mizuhiki {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 60px;
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* 紅白の帯 */
+.mizuhiki::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to bottom, #d93d3d 50%, #fff 50%);
+    /* 簡易的な紅白 */
+    border-top: 1px solid #d93d3d;
+    border-bottom: 1px solid #fff;
+}
+
+/* 結び目（花結び・蝶結び風） */
+.knot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 20px;
+}
+
+.knot::before,
+.knot::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #d93d3d;
+    border-radius: 50%;
+    top: -10px;
+}
+
+.knot::before {
+    left: 0;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(-45deg);
+}
+
+.knot::after {
+    right: 0;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    transform: rotate(45deg);
+}
+
+/* ステータスバー */
+#status {
+    margin-top: 20px;
+    color: #d93d3d;
+    font-weight: bold;
+    min-height: 1.5em;
+}
+
+/* 完了時のアニメーション */
+.envelope.sealed {
+    animation: bounce 0.5s 0.6s ease-out;
+    /* 閉じた後に少し跳ねる */
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-10px);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    70% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
