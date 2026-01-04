@@ -17,31 +17,43 @@ def get_template(data_type, content, filename=""):
         justify-content: center;
         align-items: center;
         height: 100vh;
-        background-color: #f8f8f8;
-        font-family: 'Yu Mincho', 'Hiragino Mincho ProN', serif;
+        background-color: #f0f0f0;
+        font-family: 'Yu Mincho', 'Hiragino Mincho ProN', 'YuMincho', serif;
         margin: 0;
         overflow: hidden;
     }
     .container { text-align: center; perspective: 1000px; }
-    h1 { color: #333; margin-bottom: 20px; font-weight: normal; letter-spacing: 2px; }
+    h1 {
+        color: #333;
+        margin-bottom: 30px;
+        font-weight: normal;
+        letter-spacing: 0.2em;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
     
+    /* Pochibukuro Body */
     .envelope {
-        width: 220px;
-        height: 340px;
-        background-color: #fbfaf5;
+        width: 240px;
+        height: 380px;
+        background-color: #fdfbf7;
+        /* Washi texture effect using gradients */
+        background-image:
+            radial-gradient(#e6e2d8 1px, transparent 1px),
+            linear-gradient(to bottom, #fff 0%, #f7f4ed 100%);
+        background-size: 20px 20px, 100% 100%;
         position: relative;
         margin: 0 auto;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        box-shadow: 
+            0 2px 5px rgba(0,0,0,0.05),
+            0 15px 30px rgba(0,0,0,0.1);
         cursor: pointer;
-        transition: transform 0.3s;
+        transition: transform 0.3s, box-shadow 0.3s;
         border-radius: 2px;
+        overflow: hidden;
     }
-    .envelope:hover { transform: translateY(-5px); }
-    
-    /* Decoration: Red borders on sides to look like Japanese envelope folded paper */
-    .envelope::after {
-        content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 4px;
-        background: rgba(0,0,0,0.02);
+    .envelope:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
     
     /* Flap (Lid) */
@@ -49,81 +61,139 @@ def get_template(data_type, content, filename=""):
         position: absolute;
         top: 0; left: 0;
         width: 0; height: 0;
-        border-left: 110px solid transparent;
-        border-right: 110px solid transparent;
-        border-top: 90px solid #fbfaf5; /* Same color as body */
+        border-left: 120px solid transparent;
+        border-right: 120px solid transparent;
+        border-top: 100px solid #fdfbf7;
+        /* Match Washi color closely */
         transform-origin: top;
         transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 10;
+        z-index: 20;
         filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
-        transform: rotateX(0deg); /* Initially closed */
+        transform: rotateX(0deg); /* Closed */
     }
+    /* Flap texture overlay (pseudo) is hard on border elements, keep simple */
     
-    /* Open state */
     .envelope.open .flap {
         transform: rotateX(180deg);
-        z-index: 1; /* Move behind body when open */
+        opacity: 0; /* Fade out or move behind */
+        transition-delay: 0s;
     }
     
-    /* Pocket / Message area Inside */
+    /* Noshi (Right top decoration) */
+    .noshi {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 45px;
+        background: #fff;
+        border: 1px solid #ddd;
+        z-index: 15;
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        transform: rotate(-5deg);
+    }
+    /* Red/Gold strip in Noshi */
+    .noshi::after {
+        content: '';
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 15px; height: 15px;
+        background: #d93d3d;
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+    
+    /* Content Area */
     .content-area {
         position: absolute;
-        top: 20px; left: 10px; right: 10px; bottom: 10px;
+        top: 40px; left: 20px; right: 20px; bottom: 20px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 5;
         opacity: 0;
-        transition: opacity 0.5s 0.5s; /* Fade in after flap opens */
+        transition: opacity 0.5s 0.6s;
     }
-    .envelope.open .content-area { opacity: 1; }
+    .envelope.open .content-area { opacity: 1; pointer-events: auto; }
     
-    .message { font-size: 1.2rem; color: #d93d3d; margin-bottom: 20px; }
+    .message {
+        font-size: 1.1rem;
+        color: #555;
+        margin-bottom: 25px;
+        line-height: 1.8;
+        font-family: serif;
+    }
     
     button.download-btn {
-        background-color: #d93d3d;
+        background: linear-gradient(135deg, #d93d3d, #b52b2b);
         color: white;
         border: none;
-        padding: 10px 20px;
-        border-radius: 20px;
+        padding: 12px 30px;
+        border-radius: 50px;
         cursor: pointer;
         font-family: inherit;
         font-weight: bold;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        transition: background 0.3s;
+        letter-spacing: 0.05em;
+        box-shadow: 0 4px 10px rgba(217, 61, 61, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    button.download-btn:hover { background-color: #b52b2b; }
+    button.download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(217, 61, 61, 0.5);
+    }
     
-    /* Mizuhiki (The knot) - sits on top of everything when closed */
+    /* Mizuhiki (Gold & Red) */
     .mizuhiki {
         position: absolute;
-        top: 35%; left: 0; width: 100%; height: 60px;
+        top: 45%; left: 0; width: 100%; height: 80px;
         pointer-events: none;
-        z-index: 15;
-        transition: opacity 0.3s;
+        z-index: 25; /* Above flap initially but flap logic handles z-index */
+        transition: opacity 0.4s;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
     }
-    .envelope.open .mizuhiki { opacity: 0; } /* Hide when opened */
+    .envelope.open .mizuhiki { opacity: 0; }
     
     .mizuhiki-line {
-        position: absolute; top: 50%; left: 0; right: 0; height: 2px;
-        background: linear-gradient(to bottom, #d93d3d 50%, #fff 50%);
+        position: absolute; top: 50%; left: 0; right: 0; height: 3px;
+        /* Gold and Red lines */
+        background: repeating-linear-gradient(
+            to bottom,
+            #d4af37 0px, #d4af37 1px,
+            #fff 1px, #fff 2px,
+            #d93d3d 2px, #d93d3d 3px
+        );
     }
-    .not-mizu { /* Knot */
-        position: absolute; top: 50%; left: 50%;
+    
+    /* Flower Knot */
+    .not-mizu {
+        position: absolute;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        width: 40px; height: 20px;
+        width: 50px; height: 30px;
     }
     .not-mizu::before, .not-mizu::after {
-        content: ''; position: absolute; top: -10px;
-        width: 20px; height: 20px;
-        border: 3px solid #d93d3d; border-radius: 50%;
+        content: '';
+        position: absolute;
+        top: -15px;
+        width: 24px; height: 24px;
+        border: 4px solid;
+        border-color: #d93d3d #d4af37 #d93d3d #d4af37; /* Mixed colors */
+        border-radius: 50%;
     }
-    .not-mizu::before { left: 0; transform: rotate(-45deg); border-right-color: transparent; border-bottom-color: transparent; }
-    .not-mizu::after { right: 0; transform: rotate(45deg); border-left-color: transparent; border-bottom-color: transparent; }
+    .not-mizu::before {
+        left: 0;
+        transform: rotate(-30deg);
+        border-bottom-color: transparent;
+        border-right-color: transparent;
+    }
+    .not-mizu::after {
+        right: 0;
+        transform: rotate(30deg);
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+    }
     
-    /* Instruction text under envelope */
-    .hint { margin-top: 30px; color: #888; font-size: 0.9rem; }
+    .hint { margin-top: 40px; color: #999; font-size: 0.85rem; letter-spacing: 0.05em; }
     """
 
     # JavaScript logic
@@ -204,6 +274,7 @@ def get_template(data_type, content, filename=""):
     
     <div class="envelope">
         <div class="flap"></div>
+        <div class="noshi"></div>
         <div class="mizuhiki">
             <div class="mizuhiki-line"></div>
             <div class="not-mizu"></div>
