@@ -1,6 +1,7 @@
 import base64
 import os
 import sys
+import json
 
 def get_template(data_type, content, filename=""):
     """
@@ -227,6 +228,30 @@ def get_template(data_type, content, filename=""):
                     e.stopPropagation();
                     window.open(content, '_blank');
                 }};
+            }} else if (type === 'urls') {{
+                document.getElementById('msg').innerText = "以下のリンクから\\nお選びください";
+                const btnContainer = document.querySelector('.content-area');
+                const actionBtn = document.getElementById('action-btn');
+                actionBtn.style.display = 'none'; // Hide default button
+                
+                try {{
+                    const urls = JSON.parse(content);
+                    urls.forEach((url, index) => {{
+                        const newBtn = document.createElement('button');
+                        newBtn.className = 'download-btn';
+                        newBtn.innerText = `サイト ${{index + 1}} を開く`;
+                        newBtn.style.marginBottom = '12px'; // Add spacing
+                        newBtn.style.fontSize = '0.9rem';
+                        newBtn.onclick = (e) => {{
+                            e.stopPropagation();
+                            window.open(url, '_blank');
+                        }};
+                        btnContainer.appendChild(newBtn);
+                    }});
+                }} catch (e) {{
+                    console.error("JSON parse error", e);
+                    document.getElementById('msg').innerText = "エラーが発生しました";
+                }}
             }} else {{
                 document.getElementById('msg').innerText = "ダウンロード\\n準備完了";
                 const btn = document.getElementById('action-btn');
@@ -300,14 +325,24 @@ def get_template(data_type, content, filename=""):
 
 def main():
     print("=== デジタルポチ袋ジェネレーター ===")
-    target = input("埋め込みたいファイルパス または URLを入力してください: ").strip()
+    print("埋め込みたいファイルパス、または URLを入力してください。")
+    print("※ 複数のURLを入れる場合は、スペースで区切ってください（例: http://a.com http://b.com）")
+    user_input = input("> ").strip()
     
-    # Check if URL
-    if target.startswith("http://") or target.startswith("https://"):
-        print(f"URLとして認識しました: {target}")
-        html_content = get_template('url', target)
+    # Try splitting by space to see if it's multiple URLs
+    targets = user_input.split()
+    all_urls = len(targets) > 0 and all(t.startswith("http://") or t.startswith("https://") for t in targets)
+    
+    if all_urls:
+        if len(targets) == 1:
+            print(f"URLとして認識しました: {targets[0]}")
+            html_content = get_template('url', targets[0])
+        else:
+            print(f"{len(targets)}件のURLとして認識しました。")
+            html_content = get_template('urls', json.dumps(targets))
     else:
-        # Assume File
+        # Assume File (single path, possibly with spaces, so use original user_input)
+        target = user_input
         if not os.path.exists(target):
             # Remove quotes if user dragged and dropped
             target = target.replace('"', '').replace("'", "")
